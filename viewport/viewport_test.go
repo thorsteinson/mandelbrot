@@ -177,3 +177,28 @@ func TestResolutionModification(t *testing.T) {
 		t.Error("Setting resolution below 0 did not panic")
 	}
 }
+
+func zoomPanics(z float64) (panicked bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			panicked = true
+		}
+	}()
+	vp := New()
+	vp.Zoom(z)
+	return panicked
+}
+
+func TestZoomModification(t *testing.T) {
+	vp := viewPort{}
+
+	vp = vp.Zoom(1000)
+
+	if vp.zoom != 1000 {
+		t.Error("Failed to set the zoom level")
+	}
+
+	if !zoomPanics(-1) {
+		t.Error("Setting negative zoom did not panic")
+	}
+}

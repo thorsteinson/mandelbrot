@@ -79,3 +79,15 @@ func (vp viewPort) Res(x int, y int) viewPort {
 
 	return vp
 }
+
+// Zoom safely sets the zoom level of the viewport. If a negative zoom
+// level is provided the program will crash.
+func (vp viewPort) Zoom(z float64) viewPort {
+	if z < 0 {
+		panic("Attempted to set negative zoom level on View Port")
+	}
+
+	vp.zoom = z
+
+	return vp
+}
