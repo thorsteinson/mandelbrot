@@ -1,4 +1,4 @@
-package fractal
+package viewport
 
 import (
 	"math"
@@ -30,7 +30,7 @@ func TestPointGeneration(t *testing.T) {
 	type PointCompTest struct {
 		name     string
 		expected []complex128
-		viewport ViewPort
+		viewport viewPort
 	}
 
 	tests := []PointCompTest{
@@ -41,10 +41,10 @@ func TestPointGeneration(t *testing.T) {
 				complex(-0.5, -0.5),
 				complex(0.5, -0.5),
 			},
-			ViewPort{
-				XRes: 2,
-				YRes: 2,
-				Zoom: 1,
+			viewPort{
+				xres: 2,
+				yres: 2,
+				zoom: 1,
 			},
 		},
 
@@ -55,11 +55,11 @@ func TestPointGeneration(t *testing.T) {
 				complex(9.5, 9.5),
 				complex(10.5, 9.5),
 			},
-			ViewPort{
-				XRes: 2,
-				YRes: 2,
-				Zoom: 1,
-				C:    complex(10, 10),
+			viewPort{
+				xres: 2,
+				yres: 2,
+				zoom: 1,
+				c:    complex(10, 10),
 			},
 		},
 
@@ -86,11 +86,11 @@ func TestPointGeneration(t *testing.T) {
 				complex(2.5, 0.5),
 				complex(3.5, 0.5),
 			},
-			ViewPort{
-				XRes: 4,
-				YRes: 4,
-				Zoom: 0.5,
-				C:    complex(2, 2),
+			viewPort{
+				xres: 4,
+				yres: 4,
+				zoom: 0.5,
+				c:    complex(2, 2),
 			},
 		},
 		{"Wide View Port",
@@ -106,10 +106,10 @@ func TestPointGeneration(t *testing.T) {
 				complex(0.5, -0.5),
 				complex(1.5, -0.5),
 			},
-			ViewPort{
-				XRes: 4,
-				YRes: 2,
-				Zoom: 1,
+			viewPort{
+				xres: 4,
+				yres: 2,
+				zoom: 1,
 			},
 		},
 		{"Tall View Port",
@@ -127,10 +127,10 @@ func TestPointGeneration(t *testing.T) {
 				complex(-0.5, -1.5),
 				complex(0.5, -1.5),
 			},
-			ViewPort{
-				XRes: 2,
-				YRes: 4,
-				Zoom: 1,
+			viewPort{
+				xres: 2,
+				yres: 4,
+				zoom: 1,
 			},
 		},
 	}
@@ -142,5 +142,38 @@ func TestPointGeneration(t *testing.T) {
 		for i, p := range points {
 			assertRoughEquality(p, points[i], t)
 		}
+	}
+}
+
+// Helper function for testing panics
+func resPanics(x int, y int) (panicked bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			panicked = true
+		}
+	}()
+	vp := New()
+	vp.Res(x, y)
+	return panicked
+}
+
+func TestResolutionModification(t *testing.T) {
+	vp := viewPort{}
+
+	vp = vp.Res(100, 200)
+
+	if vp.xres != 100 {
+		t.Error("Failed to set the X resolution")
+	}
+	if vp.yres != 200 {
+		t.Error("Failed to set the Y resolution")
+	}
+
+	if !resPanics(0, 10) || !resPanics(10, 0) {
+		t.Error("Setting resolution to 0 did not panic")
+	}
+
+	if !resPanics(-1, 100) || !resPanics(100, -1) {
+		t.Error("Setting resolution below 0 did not panic")
 	}
 }
