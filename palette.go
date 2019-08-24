@@ -18,7 +18,7 @@ func BlackWhite(c IterationCount) color.Color {
 // mirrored. Max is the number of maximum interations, for selecting
 // the number in the cycle. Finally, resolution is the number of
 // grayscale colors to pick for generating the palette.
-func Grayscale(resolution int, percentGray float64) []color.Color {
+func Grayscale(resolution int, percentGray float64) color.Palette {
 	startingLuminosity := 1.0
 	var midpointLuminosity = percentGray * float64(math.MaxUint16)
 	deltaLum := (startingLuminosity - midpointLuminosity) / float64(resolution)
@@ -41,4 +41,16 @@ func Grayscale(resolution int, percentGray float64) []color.Color {
 	}
 
 	return palette
+}
+
+// Colors a given index according to the maximum number of iterations,
+// and additionally handles linearly interpolating between colors if a
+// fractional portion of the interation count is present
+func PaintWithPalette(c IterationCount, p color.Palette) color.Color {
+	idx := c.Count % len(p)
+	color := p[idx]
+	if c.Frac > 0 {
+		// TODO Linearly interpolate the color in RBG color space
+	}
+	return color
 }
