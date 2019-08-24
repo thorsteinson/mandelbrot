@@ -63,7 +63,7 @@ func New() ViewPort {
 		xres: 500,
 		yres: 500,
 		zoom: 0.75,
-		c:    0.5 + 0i,
+		c:    -0.5 + 0i,
 	}
 }
 
