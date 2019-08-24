@@ -69,4 +69,12 @@ func TestPaintWithPalette(t *testing.T) {
 	if lookup != c0 {
 		t.Errorf("Failed to lookup proper color. Expected %v, Found %v", c0, lookup)
 	}
+
+	// Test points in the Mandelbrot set themselves
+	c = IterationCount{Count: -1}
+	lookup = PaintWithPalette(c, palette)
+	if lookup != color.Black {
+		t.Errorf("Negative iteration failed to resolve as black color")
+	}
+
 }

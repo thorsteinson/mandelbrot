@@ -47,6 +47,10 @@ func Grayscale(resolution int, percentGray float64) color.Palette {
 // and additionally handles linearly interpolating between colors if a
 // fractional portion of the interation count is present
 func PaintWithPalette(c IterationCount, p color.Palette) color.Color {
+	if c.Count < 0 {
+		return color.Black
+	}
+
 	idx := c.Count % len(p)
 	color := p[idx]
 	if c.Frac > 0 {
