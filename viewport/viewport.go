@@ -1,5 +1,9 @@
 package viewport
 
+import (
+	"image"
+)
+
 type ViewPort struct {
 	xres int
 	yres int
@@ -92,6 +96,8 @@ func (vp ViewPort) Zoom(z float64) ViewPort {
 	return vp
 }
 
-func (vp ViewPort) GetRes() (int, int) {
-	return vp.xres, vp.yres
+// Rect returns a rectangle generated from the provided view port
+// which can be passed to certain image functions
+func (vp ViewPort) Rect() image.Rectangle {
+	return image.Rect(0, 0, vp.xres, vp.yres)
 }

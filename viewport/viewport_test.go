@@ -202,3 +202,16 @@ func TestZoomModification(t *testing.T) {
 		t.Error("Setting negative zoom did not panic")
 	}
 }
+
+func TestRect(t *testing.T) {
+	vp := ViewPort{}
+	vp.Res(101, 202)
+
+	if vp.Rect.Dx() != 101 {
+		t.Error("Rectangle returned improper x resolution")
+	}
+
+	if vp.Rect.Dy() != 202 {
+		t.Error("Rectangle return improper y resolution")
+	}
+}

@@ -10,8 +10,7 @@ import (
 
 type IterationImage struct {
 	iters []IterationCount
-	xres  int
-	yres  int
+	rect  image.Rectangle
 }
 
 type Painter = func(IterationCount) color.Color
@@ -20,11 +19,10 @@ type Painter = func(IterationCount) color.Color
 // turns it into a colored image, which can be saved as a PNG or some
 // other type of stored bitmap on a machine.
 func Paint(p Painter, iterImg IterationImage) *image.RGBA {
-	rect := image.Rect(0, 0, iterImg.xres, iterImg.yres)
-	img := image.NewRGBA(rect)
+	img := image.NewRGBA(iterImg.rect)
 	for i, res := range iterImg.iters {
-		x := i % iterImg.xres
-		y := i / iterImg.xres
+		x := i % iterImg.rect.Dx()
+		y := i / iterImg.rect.Dy()
 		img.Set(x, y, p(res))
 	}
 
@@ -61,12 +59,10 @@ var DefaultRender = RenderParams{
 
 func Render(params RenderParams) *image.RGBA {
 	points := params.VP.Points()
-	x, y := params.VP.GetRes()
 
 	iterimg := IterationImage{
 		iters: make([]IterationCount, len(points)),
-		xres:  x,
-		yres:  y,
+		rect:  params.VP.Rect(),
 	}
 
 	// Vast majority of CPU is spent here
