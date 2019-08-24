@@ -18,6 +18,8 @@ type MandelParams struct {
 	MaxIterations int
 }
 
+type Algorithm = func (complex128, MandelParams) IterationCount
+
 // EscapeIterationCount applies a simple algorithm to get an integer
 // color for when a point escapes.
 func EscapeIterationCount(c complex128, p MandelParams) IterationCount {
