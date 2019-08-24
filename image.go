@@ -41,7 +41,7 @@ func ExportPNG(m *image.RGBA) error {
 // the selected algorithm for running the mandelbrot, and colors every
 // pixel concurrently
 type RenderParams struct {
-	VP      viewport.ViewPort
+	VP      viewport.View
 	P       Painter
 	Mandel  Algorithm
 	MandelP MandelParams

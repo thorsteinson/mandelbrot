@@ -4,16 +4,21 @@ import (
 	"image"
 )
 
-type ViewPort struct {
+type vp struct {
 	xres int
 	yres int
 	zoom float64
 	c    complex128
 }
 
+type View interface {
+	Points() []complex128
+	Rect() image.Rectangle
+}
+
 // Points will return a slice of all the complex numbers that are in
 // the provided viewport.
-func (vp ViewPort) Points() []complex128 {
+func (vp vp) Points() []complex128 {
 	ps := make([]complex128, vp.xres*vp.yres)
 
 	topLeft := complex(-1, 1)
@@ -59,11 +64,11 @@ func (vp ViewPort) Points() []complex128 {
 	return ps
 }
 
-// New returns a ViewPort. It's the only public way to get a
+// New returns a vp. It's the only public way to get a
 // viewport. By default it returns a default view that includes the
 // classic picture most associate with the Mandelbrot set
-func New() ViewPort {
-	return ViewPort{
+func New() vp {
+	return vp{
 		xres: 500,
 		yres: 500,
 		zoom: 0.75,
@@ -73,7 +78,7 @@ func New() ViewPort {
 
 // Res safely sets the resolution for the viewport. Panics when passed
 // values less than 1.
-func (vp ViewPort) Res(x int, y int) ViewPort {
+func (vp vp) Res(x int, y int) vp {
 	if x < 1 || y < 1 {
 		panic("Attempted to set resolution of View Port below 1")
 	}
@@ -86,7 +91,7 @@ func (vp ViewPort) Res(x int, y int) ViewPort {
 
 // Zoom safely sets the zoom level of the viewport. If a negative zoom
 // level is provided the program will crash.
-func (vp ViewPort) Zoom(z float64) ViewPort {
+func (vp vp) Zoom(z float64) vp {
 	if z < 0 {
 		panic("Attempted to set negative zoom level on View Port")
 	}
@@ -98,6 +103,6 @@ func (vp ViewPort) Zoom(z float64) ViewPort {
 
 // Rect returns a rectangle generated from the provided view port
 // which can be passed to certain image functions
-func (vp ViewPort) Rect() image.Rectangle {
+func (vp vp) Rect() image.Rectangle {
 	return image.Rect(0, 0, vp.xres, vp.yres)
 }

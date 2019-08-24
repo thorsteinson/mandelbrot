@@ -30,7 +30,7 @@ func TestPointGeneration(t *testing.T) {
 	type PointCompTest struct {
 		name     string
 		expected []complex128
-		viewport ViewPort
+		viewport vp
 	}
 
 	tests := []PointCompTest{
@@ -41,7 +41,7 @@ func TestPointGeneration(t *testing.T) {
 				complex(-0.5, -0.5),
 				complex(0.5, -0.5),
 			},
-			ViewPort{
+			vp{
 				xres: 2,
 				yres: 2,
 				zoom: 1,
@@ -55,7 +55,7 @@ func TestPointGeneration(t *testing.T) {
 				complex(9.5, 9.5),
 				complex(10.5, 9.5),
 			},
-			ViewPort{
+			vp{
 				xres: 2,
 				yres: 2,
 				zoom: 1,
@@ -86,7 +86,7 @@ func TestPointGeneration(t *testing.T) {
 				complex(2.5, 0.5),
 				complex(3.5, 0.5),
 			},
-			ViewPort{
+			vp{
 				xres: 4,
 				yres: 4,
 				zoom: 0.5,
@@ -106,7 +106,7 @@ func TestPointGeneration(t *testing.T) {
 				complex(0.5, -0.5),
 				complex(1.5, -0.5),
 			},
-			ViewPort{
+			vp{
 				xres: 4,
 				yres: 2,
 				zoom: 1,
@@ -127,7 +127,7 @@ func TestPointGeneration(t *testing.T) {
 				complex(-0.5, -1.5),
 				complex(0.5, -1.5),
 			},
-			ViewPort{
+			vp{
 				xres: 2,
 				yres: 4,
 				zoom: 1,
@@ -158,7 +158,7 @@ func resPanics(x int, y int) (panicked bool) {
 }
 
 func TestResolutionModification(t *testing.T) {
-	vp := ViewPort{}
+	vp := vp{}
 
 	vp = vp.Res(100, 200)
 
@@ -190,7 +190,7 @@ func zoomPanics(z float64) (panicked bool) {
 }
 
 func TestZoomModification(t *testing.T) {
-	vp := ViewPort{}
+	vp := vp{}
 
 	vp = vp.Zoom(1000)
 
@@ -204,14 +204,14 @@ func TestZoomModification(t *testing.T) {
 }
 
 func TestRect(t *testing.T) {
-	vp := ViewPort{}
-	vp.Res(101, 202)
+	vp := vp{}
+	vp = vp.Res(101, 202)
 
-	if vp.Rect.Dx() != 101 {
-		t.Error("Rectangle returned improper x resolution")
+	if vp.Rect().Dx() != 101 {
+		t.Errorf("Rectangle returned improper x resolution. Expected 101; found %v", vp.Rect().Dx())
 	}
 
-	if vp.Rect.Dy() != 202 {
-		t.Error("Rectangle return improper y resolution")
+	if vp.Rect().Dy() != 202 {
+		t.Errorf("Rectangle return improper y resolution. Expected 202; found %v", vp.Rect().Dy())
 	}
 }
