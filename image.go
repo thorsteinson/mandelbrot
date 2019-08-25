@@ -54,7 +54,6 @@ var DefaultRender = RenderParams{
 	P:      BlackWhite,
 	Mandel: EscapeIterationCount,
 	MandelP: MandelParams{
-		Bailout:       2,
 		MaxIterations: 10000,
 	},
 }

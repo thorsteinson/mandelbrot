@@ -1,6 +1,7 @@
 package fractal
 
 import (
+	"math"
 	"math/cmplx"
 )
 
@@ -14,11 +15,14 @@ type IterationCount struct {
 }
 
 type MandelParams struct {
-	Bailout       float64
 	MaxIterations int
+	Smooth        bool
 }
 
-type Algorithm = func (complex128, MandelParams) IterationCount
+type Algorithm = func(complex128, MandelParams) IterationCount
+
+const normalBailout = 2.0
+const smoothBailout = 1e6
 
 // EscapeIterationCount applies a simple algorithm to get an integer
 // color for when a point escapes.
@@ -29,13 +33,15 @@ func EscapeIterationCount(c complex128, p MandelParams) IterationCount {
 	if p.MaxIterations < 1 {
 		panic("Max Iterations cannot be less than 1`")
 	}
-	if p.Bailout < 0 {
-		panic("Bailout radius cannot be negative")
+
+	bailout := normalBailout
+	if p.Smooth {
+		bailout = smoothBailout
 	}
 
 	var z complex128
 	i := 0
-	for i < p.MaxIterations && cmplx.Abs(z) < p.Bailout {
+	for i < p.MaxIterations && cmplx.Abs(z) < bailout {
 		z = z*z + c
 		i++
 	}
@@ -44,7 +50,14 @@ func EscapeIterationCount(c complex128, p MandelParams) IterationCount {
 		return IterationCount{Count: -1}
 	}
 
+	var sn float64
+
+	if p.Smooth {
+		sn = math.Log(math.Log(cmplx.Abs(z))/math.Log(bailout)) / math.Log(2.0)
+	}
+
 	return IterationCount{
 		Count: i,
+		Frac:  sn,
 	}
 }
