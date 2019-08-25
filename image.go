@@ -6,6 +6,8 @@ import (
 	"image/color"
 	"image/png"
 	"os"
+	"runtime"
+	"sync"
 )
 
 type IterationImage struct {
@@ -58,6 +60,11 @@ var DefaultRender = RenderParams{
 }
 
 func Render(params RenderParams) *image.RGBA {
+	type work struct {
+		index int
+		point complex128
+	}
+
 	points := params.VP.Points()
 
 	iterimg := IterationImage{
@@ -65,10 +72,30 @@ func Render(params RenderParams) *image.RGBA {
 		rect:  params.VP.Rect(),
 	}
 
-	// Vast majority of CPU is spent here
-	for i, z := range points {
-		iterimg.iters[i] = params.Mandel(z, params.MandelP)
+	workers := runtime.NumCPU()
+
+	inC := make(chan work)
+
+	wg := sync.WaitGroup{}
+	wg.Add(workers)
+
+	// Set workers to handle input from the channel
+	for w := 0; w < workers; w++ {
+		go func() {
+			defer wg.Done()
+			for w := range inC {
+				iterimg.iters[w.index] = params.Mandel(w.point, params.MandelP)
+			}
+		}()
 	}
+
+	// Send points we want to process to the workers
+	for i, z := range points {
+		inC <- work{i, z}
+	}
+	close(inC)
+
+	wg.Wait()
 
 	return Paint(params.P, iterimg)
 }
