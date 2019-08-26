@@ -52,9 +52,30 @@ func PaintWithPalette(c IterationCount, p color.Palette) color.Color {
 	}
 
 	idx := c.Count % len(p)
-	color := p[idx]
+	clr := p[idx]
 	if c.Frac > 0 {
-		// TODO Linearly interpolate the color in RBG color space
+		r1, g1, b1, _ := clr.RGBA()
+		r2, g2, b2, _ := p[c.Count+1%len(p)].RGBA()
+
+		r1_norm := float64(r1) / float64(math.MaxUint16)
+		r2_norm := float64(r2) / float64(math.MaxUint16)
+		g1_norm := float64(g1) / float64(math.MaxUint16)
+		g2_norm := float64(g2) / float64(math.MaxUint16)
+		b1_norm := float64(b1) / float64(math.MaxUint16)
+		b2_norm := float64(b2) / float64(math.MaxUint16)
+
+		deltaR := c.Frac / (r2_norm - r1_norm)
+		deltaG := c.Frac / (g2_norm - g1_norm)
+		deltaB := c.Frac / (b2_norm - b1_norm)
+
+		// Returns a color that's linearly interpolated as a point in
+		// the RGB color cube.
+		return color.RGBA{
+			R: uint8((deltaR + r1_norm) * math.MaxUint8),
+			G: uint8((deltaG + g1_norm) * math.MaxUint8),
+			B: uint8((deltaB + b1_norm) * math.MaxUint8),
+			A: 255,
+		}
 	}
-	return color
+	return clr
 }
